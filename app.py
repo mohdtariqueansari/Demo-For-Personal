@@ -12,7 +12,7 @@ st.set_page_config(
 )
 
 # Apni photo ka path yahan set karo
-PHOTO_PATH = r"C:\Users\hp\Downloads\For HerStreamLit\MeandHer.jpeg"
+PHOTO_PATH = r"MeandHer.jpeg"
 
 photo_html = ""
 
