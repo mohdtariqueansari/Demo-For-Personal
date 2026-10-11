@@ -1,0 +1,241 @@
+
+import streamlit as st
+import streamlit.components.v1 as components
+import base64
+
+st.set_page_config(
+    page_title="A Little Question for You",
+    page_icon="💕",
+    layout="centered"
+)
+
+# Upload your photo
+photo = st.file_uploader(
+    "Upload your cute couple photo (optional)",
+    type=["png", "jpg", "jpeg"]
+)
+
+photo_html = ""
+
+if photo:
+    image_bytes = photo.getvalue()
+    encoded_image = base64.b64encode(image_bytes).decode()
+    mime_type = photo.type
+    photo_html = (
+        f'<img class="couple-photo" '
+        f'src="data:{mime_type};base64,{encoded_image}" '
+        f'alt="Our picture">'
+    )
+
+html_code = """
+<!DOCTYPE html>
+<html>
+<head>
+<style>
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    font-family: 'Trebuchet MS', sans-serif;
+    background: #fff0f5;
+}
+
+.main {
+    min-height: 620px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px 10px;
+}
+
+.card {
+    width: 100%;
+    max-width: 470px;
+    min-height: 390px;
+    background: #ffe0eb;
+    border: 2px solid #ffb6cf;
+    border-radius: 30px;
+    box-shadow: 0 10px 30px #f5a6c255;
+    text-align: center;
+    padding: 35px 18px;
+    position: relative;
+    overflow: hidden;
+}
+
+.heart {
+    font-size: 48px;
+    animation: beat 1s infinite;
+}
+
+@keyframes beat {
+    50% { transform: scale(1.15); }
+}
+
+h1 {
+    color: #d63384;
+    font-size: clamp(25px, 6vw, 34px);
+    margin: 20px 0 12px;
+}
+
+p {
+    color: #a84b73;
+    font-size: 17px;
+}
+
+.buttons {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 22px;
+    margin-top: 35px;
+    min-height: 55px;
+}
+
+button {
+    border: none;
+    border-radius: 25px;
+    padding: 13px 30px;
+    font-size: 17px;
+    font-weight: bold;
+    cursor: pointer;
+    box-shadow: 0 4px 10px #d8709333;
+    transition: transform 0.2s;
+}
+
+button:hover {
+    transform: scale(1.06);
+}
+
+#yes {
+    color: white;
+    background: #ff69a6;
+}
+
+#no {
+    color: #d63384;
+    background: white;
+}
+
+.card.running #no {
+    position: fixed;
+    z-index: 9999;
+}
+
+#success {
+    display: none;
+}
+
+#success h1 {
+    font-size: 35px;
+}
+
+.couple-photo {
+    display: block;
+    width: 100%;
+    max-width: 300px;
+    max-height: 320px;
+    object-fit: cover;
+    border: 5px solid white;
+    border-radius: 22px;
+    margin: 22px auto 10px;
+    box-shadow: 0 5px 18px #d8709355;
+}
+
+.love-note {
+    color: #c02d76;
+    font-size: 18px;
+    line-height: 1.6;
+}
+
+.heart-rain {
+    font-size: 27px;
+    margin-top: 10px;
+}
+</style>
+</head>
+
+<body>
+<div class="main">
+    <div class="card" id="card">
+
+        <section id="question">
+            <div class="heart">💗</div>
+
+            <h1>Will you marry me?</h1>
+
+            <p>You're my favourite person in the whole world!</p>
+
+            <div class="buttons">
+                <button id="yes">Yes 💖</button>
+                <button id="no">No 🙈</button>
+            </div>
+        </section>
+
+        <section id="success">
+            <div class="heart">💖</div>
+            <h1>Awww! 🥹💕</h1>
+
+            <p class="love-note">
+                I knew you'd say yes!<br>
+                You've just made me the happiest person ever.
+            </p>
+
+            __PHOTO__
+
+            <p class="love-note">
+                Here's to our forever! 💍
+            </p>
+
+            <div class="heart-rain">💕 💗 💖 💘 💕</div>
+        </section>
+
+    </div>
+</div>
+
+<script>
+const yesBtn = document.getElementById("yes");
+const noBtn = document.getElementById("no");
+const card = document.getElementById("card");
+const question = document.getElementById("question");
+const success = document.getElementById("success");
+
+function moveNoButton() {
+    const padding = 12;
+    const buttonWidth = noBtn.offsetWidth;
+    const buttonHeight = noBtn.offsetHeight;
+
+    const maxX = Math.max(padding, window.innerWidth - buttonWidth - padding);
+    const maxY = Math.max(padding, window.innerHeight - buttonHeight - padding);
+
+    const x = padding + Math.random() * (maxX - padding);
+    const y = padding + Math.random() * (maxY - padding);
+
+    card.classList.add("running");
+
+    noBtn.style.left = x + "px";
+    noBtn.style.top = y + "px";
+}
+
+noBtn.addEventListener("click", function(event) {
+    event.preventDefault();
+    moveNoButton();
+});
+
+yesBtn.addEventListener("click", function() {
+    noBtn.style.display = "none";
+    question.style.display = "none";
+    success.style.display = "block";
+    card.classList.remove("running");
+
+    document.body.style.background = "#fff0f5";
+});
+</script>
+</body>
+</html>
+"""
+
+html_code = html_code.replace("__PHOTO__", photo_html or "")
+
+components.html(html_code, height=660, scrolling=False)
